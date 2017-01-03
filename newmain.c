@@ -5,7 +5,7 @@
 
 #include <plib.h>
 #include <stdlib.h>
-#include "composite32-high4.h"
+#include "videoout.h"
 
 #include "ff.h"
 #include <stdint.h>
@@ -35,23 +35,24 @@
 #pragma config FNOSC = PRIPLL, FSOSCEN = OFF, POSCMOD = XT, OSCIOFNC = OFF
 #pragma config FPBDIV = DIV_1, FWDTEN = OFF, JTAGEN = OFF, ICESEL = ICS_PGx1
 
+uint16_t VRAMA[256*224/4+256*220/4];
+uint16_t *VRAM = VRAMA;
+
 typedef unsigned int uint;
 
 void audiotask(void);
 
 unsigned char sounddata[SIZEOFSOUNDBF] = {0};
 
-unsigned char *cursor; //カーソル位置
-unsigned char cursorc; //カーソル色
-
 FIL fhandle;
 FATFS fatfs;
+
+//uint16_t VRAM[X_RES*Y_RES/4];
 
 void main(void) {
 
     int i;
     static volatile FRESULT res;
-    uint8_t buff[32 * 96 * 2];
     FIL video;
 
     OSCConfig(OSC_POSC_PLL, OSC_PLL_MULT_15, OSC_PLL_POST_1, 0);
@@ -95,53 +96,62 @@ void main(void) {
     DmaChnEnable(0);
 
     init_composite(); // ビデオ出力システムの初期化
+    init_graphic(VRAMA);
+    set_graphmode(1);
 
-    for (i = 0; i < 16; i++) {
-        set_palette(i, i * 17, i * 17, i * 17);
-    }
 
     int curr = 2;
 #define FILENAME "music.raw"
-    printstr(3, curr++*10, 13, -1, "SD INIT...");
+    printstr("SD INIT...");
     if (disk_initialize(0) != 0) {
-        printstr(3, curr++*10, 13, -1, "SD INIT ERR");
+        printstr("SD INIT ERR");
         while (1) asm("wait");
     }
     if (res = f_mount(&fatfs, "", 0) != FR_OK) {
-        printstr(3, curr++*10, 13, -1, "SD INIT ERR");
+        printstr("SD INIT ERR");
         while (1) asm("wait");
     } else {
         res = f_open(&fhandle, FILENAME, FA_READ);
         if (res != FR_OK) {
-            printstr(3, curr++*10, 13, -1, "FILE <"FILENAME"> NOT FOUND");
+            printstr("FILE <"FILENAME"> NOT FOUND");
             while (1) asm("wait");
         }
 #define VIDEOFILE "video"   
-        printstr(3, curr++*10, 13, -1, "FILE <"VIDEOFILE"> FOUND");
+        printstr("FILE <"VIDEOFILE"> FOUND");
         res = f_open(&video,VIDEOFILE,FA_READ);
         if (res!=FR_OK) {
-            printstr(3, curr++*10, 13, -1, "FILE <"VIDEOFILE"> NOT FOUND");
+            printstr("FILE <"VIDEOFILE"> NOT FOUND");
             while (1) asm("wait");
         }
-        printstr(3, curr++*10, 13, -1, "FILE <"VIDEOFILE"> FOUND");
+        printstr("FILE <"VIDEOFILE"> FOUND");
     }
-    line(0, 0, 255, 224, 3);
     //    SPI2BRG = 0;
     int read;
-    f_read(&video,VRAM,14,&read);
     int prevcount = 0;
+    uint8_t palettebuff[16*3];
+    
     while (1) {
-//        musicTask();
-        prevcount = drawcount;
-        f_read(&video, VRAM, 256*192/2, &read);
+        f_read(&video,palettebuff,16*3,&read);
 
+        //        musicTask();
+//        VRAM = VRAMA;
+        prevcount = drawcount;
+  
+        f_read(&video, VRAM, 256*130/2, &read);
+        for (i = 0; i < 16; i++) {
+            g_set_palette(i, palettebuff[i*3+0],palettebuff[i*3+2],palettebuff[i*3+1]);
+        }
+        if(VRAM==VRAMA){
+            VRAM = VRAMA + 256*220/4;
+            gVRAM = VRAMA;
+        }else{
+            VRAM = VRAMA;            
+            gVRAM = VRAMA + 256*220/4;
+        }
+  
 //        f_read(&fhandle, buff, SIZEOFSOUNDBF / 2, &time);
 
-        printnum(100,200,13,0,drawcount);
-        printnum(100,210,13,0,drawcount-prevcount);
-        
-        while(drawcount-prevcount<2){
-            musicTask();
+        while(drawcount-prevcount<1){
             asm("wait");
         }
 //        if(time==0){

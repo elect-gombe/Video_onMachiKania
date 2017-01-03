@@ -18,7 +18,7 @@ extern volatile char drawing;		//　表示期間中は-1
 extern volatile unsigned short drawcount;		//　1画面表示終了ごとに1足す。アプリ側で0にする。
 							// 最低1回は画面表示したことのチェックと、アプリの処理が何画面期間必要かの確認に利用。
 
-extern unsigned short VRAM[];
+extern unsigned short *VRAM;
 extern void start_composite(void); //カラーコンポジット出力開始
 extern void stop_composite(void); //カラーコンポジット出力停止
 extern void init_composite(void); //カラーコンポジット出力初期化
