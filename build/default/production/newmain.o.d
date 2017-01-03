@@ -1,6 +1,6 @@
 build/default/production/newmain.o:  \
 newmain.c  \
-composite32-high4.h  \
+videoout.h  \
 ff.h  \
- integer.h  \
-ffconf.h 
+integer.h  \
+ ffconf.h 

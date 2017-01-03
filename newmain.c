@@ -139,7 +139,7 @@ void main(void) {
   
         f_read(&video, VRAM, 256*130/2, &read);
         for (i = 0; i < 16; i++) {
-            g_set_palette(i, palettebuff[i*3+0],palettebuff[i*3+2],palettebuff[i*3+1]);
+            g_set_palette(i, palettebuff[i*3+2],palettebuff[i*3+0],palettebuff[i*3+1]);
         }
         if(VRAM==VRAMA){
             VRAM = VRAMA + 256*220/4;
