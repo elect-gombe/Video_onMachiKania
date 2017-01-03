@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct{
+  unsigned int width;
+  unsigned int height;
+  unsigned int bdepth;
+} bmp_infohead;
+
+unsigned char palette[256];
+
+int main(int argc,char **argv){
+  char *filename;
+  FILE *fp;
+  bmp_infohead bh;
+
+  while(--argc){
+    filename = *argv++;
+    fprintf(stderr,"%s\n",filename);
+    fp = fopen(filename,"r");
+    if(fp==NULL){
+      fprintf(stderr,"<%s> file cannot open\n",filename);
+      return EXIT_FAILURE;
+    }
+    readhead(fp,&bh);
+    fclose(fp);
+  }
+}
+
+int readhead(FILE *fp,bmp_infohead *bh){
+  unsigned char head[40];
+  int readnum;
+
+  fseek(fp, 13, SEEK_SET);
+  readnum=fread(head, 4, 1, fp);
+
+  if(readnum == 1&&head[0]!=40){
+    fprintf(stderr,"read:%d\n",readnum);
+    fprintf(stderr,"err not surport filetype.\nsize:%d NOT MS type\n",head[0]);
+    return EXIT_FAILURE;
+  }else{
+    readnum = fread(head+4,36,1,SEEK_SET);
+    if(readnum == 36){
+      bh->width = head[4]<<24|head[5]<<16|head[6]<<8|head[7];
+      bh->height = head[8]<<24|head[9]<<16|head[10]<<8|head[11];
+      bh->bdepth = head[12]<<8|head[13];
+    }else{
+      fprintf(stderr,"err not surport filetype.\n");
+      return EXIT_FAILURE;
+    }
+  }
+  return EXIT_SUCCESS;
+}
+
