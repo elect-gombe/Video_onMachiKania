@@ -27,7 +27,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 PROJECTNAME=Videotest.X
 
 # Active Configuration
-DEFAULTCONF=pickit3
+DEFAULTCONF=default
 CONF=${DEFAULTCONF}
 
 # All Configurations
