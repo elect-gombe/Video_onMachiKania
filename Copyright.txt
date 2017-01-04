@@ -1,4 +1,3 @@
-
 ベースにしたプログラムの著作権表示です。
 ff.c,ff.h,diskio.h,integer.h,mmc_xmega.h,mmc_xmega.cが該当します
 
