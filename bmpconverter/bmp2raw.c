@@ -94,8 +94,8 @@ int main(int argc,char **argv){
 
 void printbmp(uint8_t *data,unsigned int size){
   while(size){
-    printf("%c",((data[3])<<4)|((data[2])));
-    printf("%c",((data[1])<<4)|((data[0])));
+    printf("%c",((data[3]))|((data[2])<<4));
+    printf("%c",((data[1]))|((data[0])<<4));
     data += 4;
     size-=4;
   }
