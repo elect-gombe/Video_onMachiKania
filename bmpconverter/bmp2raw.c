@@ -67,14 +67,15 @@ int main(int argc,char **argv){
     displaybmpinfo(&bh);
     getpalette(fp, &bh, palette);
 
-    writepalette(&bh,palette);
-
     unsigned int size;
     if(bh.bdepth==4){
       size = bh.width * bh.height;
     }else{
       ERROROUT("bd != 4");
+      continue;
     }
+
+    writepalette(&bh,palette);
 
     data = malloc(size);
     if(data==NULL){

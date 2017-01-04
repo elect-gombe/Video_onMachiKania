@@ -28,6 +28,8 @@
 
 #define SIZEOFSOUNDBF 2048
 
+#define HEIGHT 192
+
 
 //外付けクリスタル with PLL (15倍)
 #pragma config PMDL1WAY = OFF, IOL1WAY = OFF
@@ -46,8 +48,6 @@ unsigned char sounddata[SIZEOFSOUNDBF] = {0};
 
 FIL fhandle;
 FATFS fatfs;
-
-//uint16_t VRAM[X_RES*Y_RES/4];
 
 void main(void) {
 
@@ -82,8 +82,8 @@ void main(void) {
     T4CONbits.TCKPS = 3;
     T4CONbits.T32 = 0;
     T4CONbits.TCS = 0;
-    TMR4 = 0; /*とりあえず和音を再生しました。ソースを公開します。ハードは同じで多分大丈夫ですが心配ならローパスフィルターを入れてください。割り込みなどは一切使っていません。
-	      コードはリファクタリングしておきます。*/
+    TMR4 = 0; 
+    
     PR4 = CLOCK_FREQ / 8 / SAMPLING_FREQ;
     T4CONbits.ON = 1;
 
@@ -137,7 +137,7 @@ void main(void) {
 //        VRAM = VRAMA;
         prevcount = drawcount;
   
-        f_read(&video, VRAM, 256*130/2, &read);
+        f_read(&video, VRAM, 256*HEIGHT/2, &read);
         for (i = 0; i < 16; i++) {
             g_set_palette(i, palettebuff[i*3+2],palettebuff[i*3+0],palettebuff[i*3+1]);
         }
@@ -151,7 +151,8 @@ void main(void) {
   
 //        f_read(&fhandle, buff, SIZEOFSOUNDBF / 2, &time);
 
-        while(drawcount-prevcount<1){
+        while(drawcount-prevcount<2){
+            musicTask();
             asm("wait");
         }
 //        if(time==0){
@@ -194,7 +195,7 @@ void audiotask(void) {
         for (i = 0; i < SIZEOFSOUNDBF / 2; i++) {
             buff[i] = 128;
         }
-        //soundTask(buff);
+
         f_read(&fhandle, buff, SIZEOFSOUNDBF / 2, &read);
     }
 }
