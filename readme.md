@@ -5,13 +5,21 @@
 実行ファイルです。コピーしなさい。
 2.video
 動画本体です。
+3.music.raw
+MUSIC FILE
 
 ## 注意
-2.はルートに置きなさい。
+2.3.はルートに置きなさい。
 
 ## 仕様
-- 256x130
-- 59.94fps
+video
+- 256x196
+- 29.97fps
+
+music
+- 32ksps
+- 1ch
+- 8bits
 です。
 
 Made By Gombe
@@ -42,10 +50,11 @@ mkdir bmps/converted -p && for f in bmps/*.png; do convert $f -resize 256x -colo
 Makefileとか書けば並列化して高速に処理できます。そうすればだいぶ早く終わると思います。現状だとこの作業にかなり時間がかかります。これは最適化パレットを検索しているためだと思います。
 
  - 3. パレット、データ抽出と合成
-bmp2rawを使います。ソートしたい人はソートしてね。多分標準でもうすでにされていると思う(コラ
+(bmp2raw:In this project)を使います。ソートしたい人はソートしてね。多分標準でもうすでにされていると思う(コラ
 Windowsってリダイレクトってあったっけ？なければファイルに書き込むように変更してください。
 
 ```
+cd bmpconverter
 ./bmp2raw ../bmps/converted/*.bmp > video
 ```
 
