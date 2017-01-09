@@ -1,3 +1,4 @@
+#define _SUPPRESS_PLIB_WARNING
 //MachiKania‚Ìƒ\[ƒX‚©‚ç”qØ 
 
 

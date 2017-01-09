@@ -19,7 +19,8 @@
 #define KEYSTART 0x0800
 #define KEYFIRE 0x4000
 
-
+#define AUDIONAME "music.raw"
+#define VIDEOFILE "video"   
 
 #define SAMPLING_FREQ 32000
 #define OUTPUT_FREQ 100000
@@ -99,34 +100,33 @@ void main(void) {
 
     init_composite(); // ビデオ出力システムの初期化
     init_graphic(VRAMA);
-    set_graphmode(1);
-
 
     int curr = 2;
-#define FILENAME "music.raw"
-    printstr("SD INIT...");
+    printstr("SD INIT...\n");
     if (disk_initialize(0) != 0) {
-        printstr("SD INIT ERR");
+        printstr("SD INIT ERR\n");
         while (1) asm("wait");
     }
     if (res = f_mount(&fatfs, "", 0) != FR_OK) {
-        printstr("SD INIT ERR");
+        printstr("SD INIT ERR\n");
         while (1) asm("wait");
     } else {
-        res = f_open(&fhandle, FILENAME, FA_READ);
+        res = f_open(&fhandle, AUDIONAME, FA_READ);
         if (res != FR_OK) {
-            printstr("FILE <"FILENAME"> NOT FOUND");
+            printstr("FILE <"AUDIONAME"> NOT FOUND\n");
             while (1) asm("wait");
         }
-#define VIDEOFILE "video"   
-        printstr("FILE <"VIDEOFILE"> FOUND");
+        printstr("FILE <"AUDIONAME"> FOUND\n");
         res = f_open(&video,VIDEOFILE,FA_READ);
         if (res!=FR_OK) {
-            printstr("FILE <"VIDEOFILE"> NOT FOUND");
+            printstr("FILE <"VIDEOFILE"> NOT FOUND\n");
             while (1) asm("wait");
         }
-        printstr("FILE <"VIDEOFILE"> FOUND");
+        printstr("FILE <"VIDEOFILE"> FOUND\n");
     }
+
+    set_graphmode(1);
+
     //    SPI2BRG = 0;
     int read;
     int prevcount = 0;
