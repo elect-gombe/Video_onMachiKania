@@ -138,7 +138,13 @@ void main(void) {
         prevcount = drawcount;
   
         f_read(&video, VRAM, 256*HEIGHT/2, &read);
-        for (i = 0; i < 16; i++) {
+
+//        f_read(&fhandle, buff, SIZEOFSOUNDBF / 2, &time);
+        while(drawcount-prevcount<2){
+            musicTask();
+            asm("wait");
+        }
+                for (i = 0; i < 16; i++) {
             g_set_palette(i, palettebuff[i*3+2],palettebuff[i*3+0],palettebuff[i*3+1]);
         }
         if(VRAM==VRAMA){
@@ -149,12 +155,6 @@ void main(void) {
             gVRAM = VRAMA + 256*220/4;
         }
   
-//        f_read(&fhandle, buff, SIZEOFSOUNDBF / 2, &time);
-
-        while(drawcount-prevcount<2){
-            musicTask();
-            asm("wait");
-        }
 //        if(time==0){
 //            while(1);
 //        }
