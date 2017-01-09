@@ -30,6 +30,8 @@
 
 #define HEIGHT 192
 
+#define OFFSET_BUFF_B (256*224/4)
+
 
 //外付けクリスタル with PLL (15倍)
 #pragma config PMDL1WAY = OFF, IOL1WAY = OFF
@@ -37,7 +39,7 @@
 #pragma config FNOSC = PRIPLL, FSOSCEN = OFF, POSCMOD = XT, OSCIOFNC = OFF
 #pragma config FPBDIV = DIV_1, FWDTEN = OFF, JTAGEN = OFF, ICESEL = ICS_PGx1
 
-uint16_t VRAMA[256*224/4+256*220/4];
+uint16_t VRAMA[256*224/4+OFFSET_BUFF_B];
 uint16_t *VRAM = VRAMA;
 
 typedef unsigned int uint;
@@ -133,32 +135,25 @@ void main(void) {
     while (1) {
         f_read(&video,palettebuff,16*3,&read);
 
-        //        musicTask();
-//        VRAM = VRAMA;
         prevcount = drawcount;
   
         f_read(&video, VRAM, 256*HEIGHT/2, &read);
 
-//        f_read(&fhandle, buff, SIZEOFSOUNDBF / 2, &time);
         while(drawcount-prevcount<2){
             musicTask();
             asm("wait");
         }
-                for (i = 0; i < 16; i++) {
+        for (i = 0; i < 16; i++) {
             g_set_palette(i, palettebuff[i*3+2],palettebuff[i*3+0],palettebuff[i*3+1]);
         }
         if(VRAM==VRAMA){
-            VRAM = VRAMA + 256*220/4;
+            VRAM = VRAMA + OFFSET_BUFF_B;
             gVRAM = VRAMA;
         }else{
             VRAM = VRAMA;            
-            gVRAM = VRAMA + 256*220/4;
+            gVRAM = VRAMA + OFFSET_BUFF_B;
         }
   
-//        if(time==0){
-//            while(1);
-//        }
-        
     }
 }
 
